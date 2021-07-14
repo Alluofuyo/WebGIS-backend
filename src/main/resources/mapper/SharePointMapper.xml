@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.alluofuyo.webgis.mapper.SharePointMapper">
+  <resultMap id="trm" type="com.alluofuyo.webgis.mapper.TagMapper">
+    <id property="id" column="id"/>
+    <result property="tag" column="tag"/>
+    <result property="shareid" column="shareid"/>
+  </resultMap>
+  <resultMap id="prm" type="com.alluofuyo.webgis.mapper.PositionMapper">
+    <id property="id" column="id"/>
+    <result property="x" column="x"/>
+    <result property="y" column="y"/>
+  </resultMap>
+  <resultMap id="spm" type="com.alluofuyo.webgis.mapper.SharePointMapper">
+    <id property="id" column="id"/>
+    <result property="userid" column="userid"/>
+    <result property="title" column="title"/>
+    <result property="content" column="content" jdbcType="CLOB" javaType="java.lang.String"/>
+    <result property="time" column="time" javaType="java.util.Date" jdbcType="DATE"/>
+    <result property="positionid" column="positionid"/>
+    <association property="position" column="positionid" resultMap="prm"
+                 select="com.alluofuyo.webgis.mapper.PositionMapper.selectById"/>
+    <collection property="tags" column="shareid" javaType="ArrayList" resultMap="trm"
+                select="getTagByShareId"/>
+
+  </resultMap>
+  <select id="getTagByShareId" resultMap="trm" parameterType="java.lang.Integer">
+    Select *
+    from tbl_tag
+    Where shareid = #{id}
+  </select>
+
+</mapper>
