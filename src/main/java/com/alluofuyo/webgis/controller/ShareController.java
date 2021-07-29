@@ -7,6 +7,7 @@ import com.alluofuyo.webgis.service.ShareService;
 import com.alluofuyo.webgis.utils.Message;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -62,5 +63,24 @@ public class ShareController {
         Message message = new Message();
         message.getData().put("shares", allShares);
         return message.success("获取成功");
+    }
+
+    @GetMapping("/search")
+    @ResponseBody
+    public Message searchShare(@RequestParam(value = "keyword", defaultValue = "") String keywords) {
+        Message message = new Message();
+        HashMap<String, Object> map = new HashMap<>();
+        if ("".equals(keywords)){
+            List<SharePoint> allShares = shareService.getAllShares();
+            map.put("searchResult",allShares);
+            message.setData(map);
+            message.success("");
+        }else {
+            List<SharePoint> result= shareService.searchShares(keywords);
+            map.put("searchResult",result);
+            message.setData(map);
+            message.success("");
+        }
+        return message;
     }
 }

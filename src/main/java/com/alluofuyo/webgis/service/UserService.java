@@ -1,11 +1,13 @@
 package com.alluofuyo.webgis.service;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.alluofuyo.webgis.mapper.UserMapper;
 import com.alluofuyo.webgis.model.User;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
 
 @Service
 public class UserService {
@@ -32,7 +34,7 @@ public class UserService {
         User user = new User();
         user.setUsername(username);
         User user1 = userMapper.selectOne(new QueryWrapper<>(user));
-        if (user1==null) return null;
+        if (user1 == null) return null;
         if (!password.equals(user1.getPassword())) {
             return null;
         }
@@ -41,10 +43,26 @@ public class UserService {
 
     public boolean updateUser(User user_to_update) {
         int i = userMapper.updateById(user_to_update);
-        if (i==1||i==0){
+        if (i == 1 || i == 0) {
             return true;
-        }else{
+        } else {
             return false;
         }
+    }
+
+    public User getUserById(Serializable id) {
+        return userMapper.selectById(id);
+    }
+
+
+    public void uploadUserAvatar(byte[] data) {
+        User user = new User();
+        user.setId(StpUtil.getLoginIdAsInt());
+        user.setAvatar(data);
+        userMapper.updateById(user);
+    }
+
+    public byte[] getUserAvatar(String username) {
+        return userMapper.selectOne(new QueryWrapper<User>().select("avatar").eq("username", username)).getAvatar();
     }
 }
