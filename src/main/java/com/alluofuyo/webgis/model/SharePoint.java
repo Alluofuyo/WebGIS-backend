@@ -21,6 +21,8 @@ public class SharePoint {
     @TableId(value = "id",type = IdType.AUTO)
     private Integer id;
     private Integer userid;
+    @TableField(exist = false)
+    private String nickname;
     private String title;
     private String content;
     private Integer positionid;

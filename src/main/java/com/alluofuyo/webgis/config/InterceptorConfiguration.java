@@ -25,9 +25,8 @@ public class InterceptorConfiguration {
 //                            StpUtil::checkLogin);
 //
 //                })).addPathPatterns("/**");
-
                 registry.addInterceptor(new CheckLoginInterceptor()).addPathPatterns("/**").excludePathPatterns(
-                        "/user/login", "/user/regist");
+                        "/user/login", "/user/regist","/user/getAvatar/*");
             }
         };
     }

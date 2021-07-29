@@ -1,12 +1,15 @@
 package com.alluofuyo.webgis.service;
 
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.alluofuyo.webgis.mapper.PositionMapper;
 import com.alluofuyo.webgis.mapper.SharePointMapper;
 import com.alluofuyo.webgis.mapper.TagMapper;
+import com.alluofuyo.webgis.mapper.UserMapper;
 import com.alluofuyo.webgis.model.Position;
 import com.alluofuyo.webgis.model.SharePoint;
 import com.alluofuyo.webgis.model.Tag;
+import com.alluofuyo.webgis.model.User;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +24,8 @@ public class ShareService {
     PositionMapper positionMapper;
     @Resource
     TagMapper tagMapper;
-
+    @Resource
+    UserMapper userMapper;
 
     public Position addSharePoint(SharePoint sharePointToAdd) {
         try {
@@ -66,7 +70,22 @@ public class ShareService {
     }
 
     public List<SharePoint> getAllShares() {
-        new QueryWrapper<>().exists()
-        return sharePointMapper.selectList(new QueryWrapper<>());
+        List<SharePoint> sharePoints = sharePointMapper.selectList(new QueryWrapper<SharePoint>());
+        sharePoints.forEach((s) -> {
+            s.setPosition(positionMapper.selectById(s.getPositionid()));
+            s.setTags(tagMapper.selectList(new QueryWrapper<Tag>().eq("shareid", s.getId())));
+            s.setNickname(userMapper.selectOne(new QueryWrapper<User>().select("nickname").eq("id", s.getUserid())).getNickname());
+        });
+        return sharePoints;
+    }
+
+    public List<SharePoint> searchShares(String keywords) {
+        List<SharePoint> sharePoints = sharePointMapper.selectList(new QueryWrapper<SharePoint>().like("content", keywords));
+        sharePoints.forEach((s) -> {
+            s.setPosition(positionMapper.selectById(s.getPositionid()));
+            s.setTags(tagMapper.selectList(new QueryWrapper<Tag>().eq("shareid", s.getId())));
+            s.setNickname(userMapper.selectOne(new QueryWrapper<User>().select("nickname").eq("id", s.getUserid())).getNickname());
+        });
+        return sharePoints;
     }
 }
